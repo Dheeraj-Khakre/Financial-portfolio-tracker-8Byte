@@ -5,7 +5,7 @@ services:
     image: mysql:8.0
     container_name: portfolio-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root123
       MYSQL_DATABASE: portfolio_tracker
     ports:
       - "3306:3306"
