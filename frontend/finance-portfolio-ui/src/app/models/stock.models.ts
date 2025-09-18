@@ -8,8 +8,8 @@ export interface StockData {
   symbol: string;
   companyName: string;
   currentPrice: number;
-  changeAmount: number;
-  changePercent: number;
+  changeAmount: number | null;
+  changePercent: number | null;
   openPrice: number;
   highPrice: number;
   lowPrice: number;

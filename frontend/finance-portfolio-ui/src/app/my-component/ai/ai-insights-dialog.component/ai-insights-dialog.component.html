@@ -1,0 +1,71 @@
+<!-- src/app/ai/ai-insights-dialog/ai-insights-dialog.component.html -->
+<div class="ai-dialog p-2">
+  <div class="d-flex align-items-center mb-2">
+    <h4 class="mb-0">Portfolio Insights
+      <small *ngIf="portfolioName" class="text-muted">— {{ portfolioName }}</small>
+    </h4>
+    <span class="flex-spacer"></span>
+    <button mat-icon-button (click)="close()"><mat-icon>close</mat-icon></button>
+  </div>
+
+  <div *ngIf="loading" class="text-center p-4">
+    <mat-progress-spinner diameter="36" mode="indeterminate"></mat-progress-spinner>
+  </div>
+
+  <div *ngIf="insights && !loading" class="row">
+    <div class="col-md-6">
+      <mat-card class="mb-2">
+        <mat-card-title>Summary</mat-card-title>
+        <mat-card-content>
+          <p *ngIf="insights.summary; else nosummary">{{ insights.summary }}</p>
+          <ng-template #nosummary><p class="text-muted">No summary available.</p></ng-template>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="mb-2">
+        <mat-card-title>Key Metrics</mat-card-title>
+        <mat-card-content>
+          <p><strong>Diversification score:</strong> {{ insights.diversificationScore ?? '—' }}</p>
+          <p><strong>Risk level:</strong> <span class="badge bg-secondary">{{ insights.riskLevel ?? '—' }}</span></p>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-title>Recommendations</mat-card-title>
+        <mat-card-content>
+          <ng-container *ngIf="insights.recommendations?.length; else norec">
+            <mat-list>
+              <mat-list-item *ngFor="let r of insights.recommendations">
+                <mat-icon matListIcon>lightbulb</mat-icon>
+                <div matLine>{{ r }}</div>
+              </mat-list-item>
+            </mat-list>
+          </ng-container>
+          <ng-template #norec>
+            <p class="text-muted">No recommendations available.</p>
+          </ng-template>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-md-6">
+      <mat-card>
+        <mat-card-title>Asset Allocation</mat-card-title>
+        <mat-card-content>
+          <div *ngIf="allocationChartData?.length; else noalloc">
+            <ngx-charts-pie-chart
+              [results]="allocationChartData"
+              [legend]="true"
+              [labels]="true"
+              [doughnut]="false"
+              [view]="[400,300]">
+            </ngx-charts-pie-chart>
+          </div>
+          <ng-template #noalloc>
+            <p class="text-muted">No allocation data.</p>
+          </ng-template>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

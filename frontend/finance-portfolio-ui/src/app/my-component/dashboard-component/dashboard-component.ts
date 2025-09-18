@@ -7,6 +7,7 @@ import { finalize } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { AssetDetailDialogComponent } from '../stocks/asset-detail-dialog.component/asset-detail-dialog.component';
 import { PortfolioFormDialogComponent } from '../portfolio/portfolio-form-dialog.component/portfolio-form-dialog.component';
+import { AiInsightsDialogComponent } from '../ai/ai-insights-dialog.component/ai-insights-dialog.component';
 
 @Component({
   selector: 'app-dashboard-component',
@@ -201,6 +202,25 @@ export class DashboardComponent implements OnInit {
         // nothing changed — still reload to be safe
         this.loadPortfolios();
       }
+    });
+  }
+
+  // add method
+  openAiInsights() {
+    if (!this.selectedPortfolio) return;
+
+    const ref = this.dialog.open(AiInsightsDialogComponent, {
+      data: {
+        portfolioId: this.selectedPortfolio.id,
+        portfolioName: this.selectedPortfolio.name
+      },
+      width: '1500px',
+      maxHeight: '80vh'
+    });
+
+    // optionally handle afterClosed
+    ref.afterClosed().subscribe(() => {
+      // no special result expected; keep as no-op or refresh portfolios if needed
     });
   }
 

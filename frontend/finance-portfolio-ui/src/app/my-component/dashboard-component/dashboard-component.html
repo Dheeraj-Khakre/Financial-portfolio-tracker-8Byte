@@ -24,6 +24,13 @@
       <mat-icon>refresh</mat-icon> Refresh Prices
     </button>
 
+    <!-- Add this in the same toolbar area -->
+    <button mat-stroked-button color="primary" class="me-2" (click)="openAiInsights()"
+      [disabled]="!selectedPortfolio || actionInProgress">
+      <mat-icon>insights</mat-icon> Insights
+    </button>
+
+
     <div *ngIf="loading" class="ms-2">
       <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
     </div>

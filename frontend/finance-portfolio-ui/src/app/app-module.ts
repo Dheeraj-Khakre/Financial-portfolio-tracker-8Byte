@@ -24,7 +24,9 @@ import { AssetDetailComponent } from './my-component/stocks/asset-detail.compone
 import { AssetDetailDialogComponent } from './my-component/stocks/asset-detail-dialog.component/asset-detail-dialog.component';
 import { PortfolioFormComponent } from './my-component/portfolio/portfolio-form.component/portfolio-form.component';
 import { PortfolioFormDialogComponent } from './my-component/portfolio/portfolio-form-dialog.component/portfolio-form-dialog.component';
-
+import { AiInsightsDialogComponent } from './my-component/ai/ai-insights-dialog.component/ai-insights-dialog.component';
+import { MatListModule } from '@angular/material/list';
+import { MatChipsModule } from '@angular/material/chips';
 
 
 @NgModule({
@@ -36,7 +38,8 @@ import { PortfolioFormDialogComponent } from './my-component/portfolio/portfolio
     AssetDetailComponent,
     AssetDetailDialogComponent,
     PortfolioFormComponent,
-    PortfolioFormDialogComponent
+    PortfolioFormDialogComponent,
+    AiInsightsDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -58,6 +61,9 @@ import { PortfolioFormDialogComponent } from './my-component/portfolio/portfolio
     MatInputModule,
     MatButtonModule,
     NgxChartsModule,
+     MatListModule,
+     MatChipsModule,
+  
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),
