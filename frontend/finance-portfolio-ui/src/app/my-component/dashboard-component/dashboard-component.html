@@ -8,17 +8,27 @@
       </mat-select>
     </mat-form-field>
 
+    <!-- Create portfolio (opens dialog without id) -->
+    <button mat-stroked-button color="primary" class="me-2" (click)="openPortfolioDialog()">
+      <mat-icon>add</mat-icon> Create
+    </button>
+
+    <!-- Edit selected portfolio (opens dialog with id) -->
+    <button mat-stroked-button color="accent" class="me-2" (click)="openPortfolioDialog(selectedPortfolio?.id)"
+      [disabled]="!selectedPortfolio">
+      <mat-icon>edit</mat-icon> Edit
+    </button>
+
     <button mat-stroked-button color="primary" class="me-2" (click)="refreshPrices()"
       [disabled]="actionInProgress || !selectedPortfolio">
       <mat-icon>refresh</mat-icon> Refresh Prices
     </button>
-    <a routerLink="/portfolios/create" class="btn btn-primary">Create Portfolio</a>
-
 
     <div *ngIf="loading" class="ms-2">
       <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
     </div>
   </div>
+
 
   <div *ngIf="!selectedPortfolio && !loading" class="text-center p-5 border rounded">
     <h4>No portfolios yet</h4>

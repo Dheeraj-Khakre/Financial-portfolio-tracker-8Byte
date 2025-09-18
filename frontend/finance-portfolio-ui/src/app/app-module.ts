@@ -23,6 +23,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { AssetDetailComponent } from './my-component/stocks/asset-detail.component/asset-detail.component';
 import { AssetDetailDialogComponent } from './my-component/stocks/asset-detail-dialog.component/asset-detail-dialog.component';
 import { PortfolioFormComponent } from './my-component/portfolio/portfolio-form.component/portfolio-form.component';
+import { PortfolioFormDialogComponent } from './my-component/portfolio/portfolio-form-dialog.component/portfolio-form-dialog.component';
 
 
 
@@ -34,7 +35,8 @@ import { PortfolioFormComponent } from './my-component/portfolio/portfolio-form.
     DashboardComponent,
     AssetDetailComponent,
     AssetDetailDialogComponent,
-    PortfolioFormComponent
+    PortfolioFormComponent,
+    PortfolioFormDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -56,7 +58,6 @@ import { PortfolioFormComponent } from './my-component/portfolio/portfolio-form.
     MatInputModule,
     MatButtonModule,
     NgxChartsModule,
-    MatDialogModule
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),

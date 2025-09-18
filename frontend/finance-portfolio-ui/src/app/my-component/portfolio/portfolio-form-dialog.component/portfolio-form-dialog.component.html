@@ -1,0 +1,30 @@
+<!-- src/app/portfolio/portfolio-form-dialog/portfolio-form-dialog.component.html -->
+<h3 mat-dialog-title>{{ isEdit ? 'Edit Portfolio' : 'Create Portfolio' }}</h3>
+
+<mat-dialog-content [formGroup]="form" class="pt-2">
+  <mat-form-field appearance="fill" class="w-100 mb-2">
+    <mat-label>Portfolio name</mat-label>
+    <input matInput formControlName="name" />
+    <mat-error *ngIf="form.controls['name'].hasError('required')">Name is required</mat-error>
+    <mat-error *ngIf="form.controls['name'].hasError('maxlength')">Maximum 100 characters</mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="w-100 mb-2">
+    <mat-label>Description</mat-label>
+    <textarea matInput rows="4" formControlName="description"></textarea>
+    <mat-error *ngIf="form.controls['description'].hasError('maxlength')">Maximum 500 characters</mat-error>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="pt-2">
+  <button mat-stroked-button (click)="cancel()" [disabled]="saving">Cancel</button>
+
+  <button *ngIf="isEdit" mat-button color="warn" (click)="deletePortfolio()" [disabled]="saving">
+    Delete
+  </button>
+
+  <button mat-raised-button color="primary" (click)="submit()" [disabled]="saving">
+    {{ isEdit ? 'Save' : 'Create' }}
+    <mat-progress-spinner *ngIf="saving" mode="indeterminate" diameter="18"></mat-progress-spinner>
+  </button>
+</mat-dialog-actions>

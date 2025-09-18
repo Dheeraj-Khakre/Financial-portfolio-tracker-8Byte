@@ -6,6 +6,7 @@ import { StockService } from '../../services/stock.service';
 import { finalize } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { AssetDetailDialogComponent } from '../stocks/asset-detail-dialog.component/asset-detail-dialog.component';
+import { PortfolioFormDialogComponent } from '../portfolio/portfolio-form-dialog.component/portfolio-form-dialog.component';
 
 @Component({
   selector: 'app-dashboard-component',
@@ -174,4 +175,33 @@ export class DashboardComponent implements OnInit {
       maxHeight: '80vh'
     });
   }
+  openPortfolioDialog(id?: number) {
+    const ref = this.dialog.open(PortfolioFormDialogComponent, {
+      data: { id },
+      width: '720px',
+      maxHeight: '80vh'
+    });
+
+    ref.afterClosed().subscribe(result => {
+      // result may be { id } for created/updated, or { deleted: true }, or undefined
+      if (result?.id) {
+        // refresh portfolios and select the new/updated one
+        this.loadPortfolios(); // we reload; after loadPortfolios will select first by default
+        // Optionally select the returned portfolio after load completes:
+        // For that we can wait a tick or modify loadPortfolios to accept a selectId param.
+        // Simpler: after reload, call selectPortfolio with ID (implement select after promise)
+        setTimeout(() => {
+          const found = this.portfolios.find(p => p.id === result.id);
+          if (found) this.selectPortfolio(found.id);
+        }, 400);
+      } else if (result?.deleted) {
+        // reload list and clear selection
+        this.loadPortfolios();
+      } else {
+        // nothing changed — still reload to be safe
+        this.loadPortfolios();
+      }
+    });
+  }
+
 }
