@@ -1,0 +1,23 @@
+<nav class="navbar navbar-expand navbar-dark bg-dark px-3">
+  <a class="navbar-brand" routerLink="/">Finance Portfolio</a>
+
+  <div class="ms-auto d-flex align-items-center">
+    <!-- When the user is NOT logged in -->
+    <ng-container *ngIf="!auth.isLoggedIn">
+      <a routerLink="/register" class="btn btn-outline-light btn-sm me-2">Register</a>
+      <a routerLink="/login" class="btn btn-outline-light btn-sm">Login</a>
+    </ng-container>
+
+    <!-- When the user IS logged in -->
+    <ng-container *ngIf="auth.isLoggedIn">
+      <a routerLink="/profile" class="btn btn-outline-light btn-sm me-2">
+        <i class="bi bi-person-circle"></i> Profile
+      </a>
+      <button class="btn btn-outline-warning btn-sm" (click)="logout()">
+        <i class="bi bi-box-arrow-right"></i> Logout
+      </button>
+    </ng-container>
+  </div>
+</nav>
+
+<router-outlet></router-outlet>
