@@ -22,6 +22,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { AssetDetailComponent } from './my-component/stocks/asset-detail.component/asset-detail.component';
 import { AssetDetailDialogComponent } from './my-component/stocks/asset-detail-dialog.component/asset-detail-dialog.component';
+import { PortfolioFormComponent } from './my-component/portfolio/portfolio-form.component/portfolio-form.component';
 
 
 
@@ -32,7 +33,8 @@ import { AssetDetailDialogComponent } from './my-component/stocks/asset-detail-d
     Register,
     DashboardComponent,
     AssetDetailComponent,
-    AssetDetailDialogComponent
+    AssetDetailDialogComponent,
+    PortfolioFormComponent
   ],
   imports: [
     BrowserModule,

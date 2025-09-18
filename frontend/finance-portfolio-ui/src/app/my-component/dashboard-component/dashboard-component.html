@@ -12,6 +12,8 @@
       [disabled]="actionInProgress || !selectedPortfolio">
       <mat-icon>refresh</mat-icon> Refresh Prices
     </button>
+    <a routerLink="/portfolios/create" class="btn btn-primary">Create Portfolio</a>
+
 
     <div *ngIf="loading" class="ms-2">
       <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
