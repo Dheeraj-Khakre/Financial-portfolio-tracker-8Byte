@@ -8,7 +8,8 @@
       </mat-select>
     </mat-form-field>
 
-    <button mat-stroked-button color="primary" class="me-2" (click)="refreshPrices()" [disabled]="actionInProgress || !selectedPortfolio">
+    <button mat-stroked-button color="primary" class="me-2" (click)="refreshPrices()"
+      [disabled]="actionInProgress || !selectedPortfolio">
       <mat-icon>refresh</mat-icon> Refresh Prices
     </button>
 
@@ -59,9 +60,11 @@
             <!-- ticker -->
             <ng-container matColumnDef="ticker">
               <th mat-header-cell *matHeaderCellDef>Ticker</th>
-              <td mat-cell *matCellDef="let a" (click)="onSelectAsset(a)" class="cursor-pointer">
-                {{ a.tickerSymbol }}
+              <!-- inside <td mat-cell *matCellDef="let a"> -->
+              <td mat-cell *matCellDef="let a">
+                <a (click)="openAssetDialog(a.tickerSymbol)" class="link-like">{{ a.tickerSymbol }}</a>
               </td>
+
             </ng-container>
 
             <!-- quantity -->
@@ -106,11 +109,7 @@
       <mat-card class="mb-3">
         <mat-card-title>Allocation</mat-card-title>
         <mat-card-content>
-          <ngx-charts-pie-chart 
-            [results]="allocationData"
-            [legend]="true"
-            [labels]="true"
-            [doughnut]="false"
+          <ngx-charts-pie-chart [results]="allocationData" [legend]="true" [labels]="true" [doughnut]="false"
             [view]="[400,300]">
           </ngx-charts-pie-chart>
         </mat-card-content>
@@ -121,16 +120,8 @@
         <mat-card-content>
           <div *ngIf="!selectedAsset" class="text-muted">Select an asset to view history.</div>
 
-          <ngx-charts-line-chart
-            *ngIf="lineSeries.length"
-            [results]="lineSeries"
-            [xAxis]="true"
-            [yAxis]="true"
-            [legend]="false"
-            [showXAxisLabel]="false"
-            [showYAxisLabel]="false"
-            [autoScale]="true"
-            [view]="[600,300]">
+          <ngx-charts-line-chart *ngIf="lineSeries.length" [results]="lineSeries" [xAxis]="true" [yAxis]="true"
+            [legend]="false" [showXAxisLabel]="false" [showYAxisLabel]="false" [autoScale]="true" [view]="[600,300]">
           </ngx-charts-line-chart>
         </mat-card-content>
       </mat-card>

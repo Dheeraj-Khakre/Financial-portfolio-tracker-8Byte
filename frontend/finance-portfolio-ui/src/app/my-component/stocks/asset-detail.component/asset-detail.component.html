@@ -1,0 +1,79 @@
+<!-- src/app/stocks/asset-detail/asset-detail.component.html -->
+<div class="container mt-4">
+  <div class="d-flex align-items-center mb-3">
+    <button class="btn btn-link me-2" (click)="back()">
+      <mat-icon>arrow_back</mat-icon> Back
+    </button>
+
+    <h3 class="mb-0">
+      {{ symbol }} 
+      <small *ngIf="stock">— {{ stock.companyName }}</small>
+    </h3>
+
+    <div class="ms-auto d-flex align-items-center gap-2">
+      <mat-form-field appearance="outline" class="me-2" style="width:120px">
+        <mat-label>Range</mat-label>
+        <mat-select [value]="days" (selectionChange)="onChangeRange($event.value)">
+          <mat-option [value]="7">7d</mat-option>
+          <mat-option [value]="30">30d</mat-option>
+          <mat-option [value]="90">90d</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-stroked-button (click)="refreshAll()" [disabled]="loading || loadingHistory">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-center p-4">
+    <mat-progress-spinner mode="indeterminate" diameter="36"></mat-progress-spinner>
+  </div>
+
+  <div *ngIf="stock && !loading" class="row">
+    <div class="col-md-4">
+      <mat-card>
+        <mat-card-title>Overview</mat-card-title>
+        <mat-card-content>
+          <p><strong>Symbol:</strong> {{ stock.symbol }}</p>
+          <p><strong>Company:</strong> {{ stock.companyName }}</p>
+          <p><strong>Current:</strong> {{ stock.currentPrice | currency }}</p>
+          <p><strong>Change:</strong> {{ stock.changeAmount ?? 0 }} ({{ stock.changePercent ?? 0 }}%)</p>
+          <p><strong>Open:</strong> {{ stock.openPrice | currency }}</p>
+          <p><strong>High / Low:</strong> {{ stock.highPrice | currency }} / {{ stock.lowPrice | currency }}</p>
+          <p><strong>Volume:</strong> {{ stock.volume | number }}</p>
+          <p><strong>Last updated:</strong> {{ stock.lastUpdated | date:'medium' }}</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="col-md-8">
+      <mat-card>
+        <mat-card-title>Price History ({{ days }} days)</mat-card-title>
+        <mat-card-content>
+          <div *ngIf="loadingHistory" class="text-center p-3">
+            <mat-progress-spinner mode="indeterminate" diameter="36"></mat-progress-spinner>
+          </div>
+
+          <ngx-charts-line-chart 
+            *ngIf="lineSeries.length && !loadingHistory"
+            [results]="lineSeries"
+            [xAxis]="true"
+            [yAxis]="true"
+            [legend]="false"
+            [showXAxisLabel]="false"
+            [showYAxisLabel]="true"
+            [autoScale]="true"
+            [timeline]="false"
+            [view]="[700,350]">
+          </ngx-charts-line-chart>
+
+          <div *ngIf="!lineSeries.length && !loadingHistory" class="text-center p-3 text-muted">
+            No historical data available.
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

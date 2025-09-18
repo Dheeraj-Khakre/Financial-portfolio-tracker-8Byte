@@ -18,3 +18,7 @@ export interface StockData {
   lastUpdated: string;            // ISO date
   historicalPrices?: HistoricalPrice[];
 }
+
+export interface AssetDetailDialogData {
+  symbol: string;
+}

@@ -4,13 +4,15 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PortfolioService } from '../../services/portfolio.service';
 import { StockService } from '../../services/stock.service';
 import { finalize } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { AssetDetailDialogComponent } from '../stocks/asset-detail-dialog.component/asset-detail-dialog.component';
 
 @Component({
   selector: 'app-dashboard-component',
   standalone: false,
   templateUrl: './dashboard-component.html',
   styleUrl: './dashboard-component.scss',
-   changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit {
   portfolios: PortfolioResponse[] = [];
@@ -32,7 +34,8 @@ export class DashboardComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private portfolioSvc: PortfolioService,
-    private stockSvc: StockService
+    private stockSvc: StockService,
+    private dialog: MatDialog
   ) {
     // Initialize the form here — FormBuilder is safe to use now
     this.addForm = this.fb.group({
@@ -160,6 +163,15 @@ export class DashboardComponent implements OnInit {
         console.error(err);
         this.lineSeries = [];
       }
+    });
+  }
+
+  // add method
+  openAssetDialog(symbol: string) {
+    this.dialog.open(AssetDetailDialogComponent, {
+      data: { symbol },
+      width: '900px',
+      maxHeight: '80vh'
     });
   }
 }

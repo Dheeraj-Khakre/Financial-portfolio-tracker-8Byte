@@ -20,6 +20,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
+import { AssetDetailComponent } from './my-component/stocks/asset-detail.component/asset-detail.component';
+import { AssetDetailDialogComponent } from './my-component/stocks/asset-detail-dialog.component/asset-detail-dialog.component';
 
 
 
@@ -28,7 +30,9 @@ import { MatDialogModule } from '@angular/material/dialog';
     App,
     Login,
     Register,
-    DashboardComponent
+    DashboardComponent,
+    AssetDetailComponent,
+    AssetDetailDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -49,7 +53,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    NgxChartsModule
+    NgxChartsModule,
+    MatDialogModule
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),

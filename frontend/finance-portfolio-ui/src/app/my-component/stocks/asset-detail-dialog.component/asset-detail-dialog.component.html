@@ -1,0 +1,53 @@
+<div class="asset-dialog mat-elevation-z2">
+  <div class="dialog-header d-flex align-items-center mb-2">
+    <h4 class="mb-0">{{ symbol }} <small *ngIf="stock">— {{ stock.companyName }}</small></h4>
+    <span class="flex-spacer"></span>
+    <button mat-icon-button (click)="close()"><mat-icon>close</mat-icon></button>
+  </div>
+
+  <div *ngIf="loading" class="text-center p-3">
+    <mat-progress-spinner diameter="36" mode="indeterminate"></mat-progress-spinner>
+  </div>
+
+  <div *ngIf="stock && !loading" class="row">
+    <div class="col-md-4">
+      <p><strong>Current:</strong> {{ stock.currentPrice | currency }}</p>
+      <p><strong>Change:</strong> {{ stock.changeAmount ?? 0 }} ({{ stock.changePercent ?? 0 }}%)</p>
+      <p><strong>Open:</strong> {{ stock.openPrice | currency }}</p>
+      <p><strong>Volume:</strong> {{ stock.volume | number }}</p>
+    </div>
+    <div class="col-md-8">
+      <div class="d-flex mb-2 align-items-center">
+        <mat-form-field appearance="outline" style="width:120px; margin-right:8px;">
+          <mat-label>Range</mat-label>
+          <mat-select [value]="days" (selectionChange)="changeRange($event.value)">
+            <mat-option [value]="7">7d</mat-option>
+            <mat-option [value]="30">30d</mat-option>
+            <mat-option [value]="90">90d</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-stroked-button (click)="loadStock()" [disabled]="loading || loadingHistory">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+
+      <div *ngIf="loadingHistory" class="text-center p-2">
+        <mat-progress-spinner diameter="28" mode="indeterminate"></mat-progress-spinner>
+      </div>
+
+      <ngx-charts-line-chart
+        *ngIf="lineSeries.length && !loadingHistory"
+        [results]="lineSeries"
+        [xAxis]="true"
+        [yAxis]="true"
+        [legend]="false"
+        [autoScale]="true"
+        [view]="[700,300]">
+      </ngx-charts-line-chart>
+
+      <div *ngIf="!lineSeries.length && !loadingHistory" class="text-center text-muted p-2">
+        No history available.
+      </div>
+    </div>
+  </div>
+</div>
