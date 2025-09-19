@@ -5,12 +5,13 @@ import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { AssetRequest, AssetResponse, PortfolioRequest, PortfolioResponse } from '../models/portfolio.model';
 import { MessageResponse } from '../models/jwt-response';
+import { environment } from '../../environments/environments';
 
 @Injectable({ providedIn: 'root' })
 export class PortfolioService {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
-  private api = 'http://localhost:8080/api/portfolios';
+  private api = `${environment.apiUrl}/portfolios`;
 
   /** Build headers with JWT if available */
   private headers(): HttpHeaders {

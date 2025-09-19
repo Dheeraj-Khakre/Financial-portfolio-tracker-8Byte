@@ -4,12 +4,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { HistoricalPrice, StockData } from '../models/stock.models';
+import { environment } from '../../environments/environments';
 
 @Injectable({ providedIn: 'root' })
 export class StockService {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
-  private api = 'http://localhost:8080/api/stocks';
+  private api = `${environment.apiUrl}/stocks`;
 
   /** Helper to add Authorization header if token exists */
   private headers() {

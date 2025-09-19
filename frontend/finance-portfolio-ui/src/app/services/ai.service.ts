@@ -4,14 +4,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { AIInsightResponse } from '../models/ai.models';
+import { environment } from '../../environments/environments';
 
 @Injectable({ providedIn: 'root' })
 export class AiService {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
 
-  // Match your Spring mapping: /ai
-  private api = 'http://localhost:8080/api/ai';
+  private api = `${environment.apiUrl}/ai`;
 
   /** Build HttpClient options with Authorization header if token exists */
   private getAuthOptions(): { headers?: HttpHeaders } {
