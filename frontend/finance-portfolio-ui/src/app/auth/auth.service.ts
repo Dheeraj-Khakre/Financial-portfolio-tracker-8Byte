@@ -5,14 +5,14 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { SignupRequest } from '../models/signup-request';
 import { JwtResponse, MessageResponse } from '../models/jwt-response';
 import { LoginRequest } from '../models/login-request';
-
+import { environment } from '../../environments/environments.prod';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
 
   private tokenKey = 'jwt-token';
-  private api = 'http://localhost:8080/api/auth';
+  private api = `${environment.apiUrl}/auth`;
 
   /** 🔑 logged-in state is only true if we're in the browser and a token exists */
   private _loggedIn = new BehaviorSubject<boolean>(this.hasStoredToken());
