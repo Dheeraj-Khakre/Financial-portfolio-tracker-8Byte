@@ -2,6 +2,7 @@ package com.portfolio.controller;
 
 import com.portfolio.dto.HistoricalPrice;
 import com.portfolio.dto.StockData;
+import com.portfolio.service.StockDataAlphaService;
 import com.portfolio.service.StockDataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,11 @@ public class StockController {
 
 
     private final StockDataService stockDataService;
+    private final StockDataAlphaService stockDataAlphaService;
 
     @GetMapping("/{symbol}")
     public ResponseEntity<StockData> getStockData(@PathVariable String symbol) {
-        StockData stockData = stockDataService.getStockData(symbol);
+        StockData stockData = stockDataAlphaService.getStockData(symbol);
         return ResponseEntity.ok(stockData);
     }
 
