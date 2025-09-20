@@ -1,5 +1,6 @@
 package com.portfolio.service;
 
+import com.portfolio.dto.HistoricalPrice;
 import com.portfolio.dto.StockData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,8 +62,8 @@ public class StockDataService {
         }
     }
 
-    public List<StockData.HistoricalPrice> getHistoricalPrices(String symbol, int days) {
-        List<StockData.HistoricalPrice> prices = new ArrayList<>();
+    public List<HistoricalPrice> getHistoricalPrices(String symbol, int days) {
+        List<HistoricalPrice> prices = new ArrayList<>();
         BigDecimal basePrice = getRandomPrice();
 
         for (int i = days; i >= 0; i--) {
@@ -72,7 +73,7 @@ public class StockDataService {
             if (price.compareTo(BigDecimal.ZERO) <= 0) {
                 price = BigDecimal.valueOf(10.00);
             }
-            prices.add(new StockData.HistoricalPrice(date, price));
+            prices.add(HistoricalPrice.builder().price(price).date(date).build());
             basePrice = price;
         }
 
@@ -88,7 +89,12 @@ public class StockDataService {
         BigDecimal changePercent = changeAmount.divide(previousClose, 4, RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(100));
 
-        StockData stockData = new StockData(symbol.toUpperCase(), companyName, currentPrice);
+        StockData stockData = StockData
+                .builder()
+                .currentPrice(currentPrice)
+                .companyName(companyName)
+                .symbol(symbol.toUpperCase())
+                .build();
         stockData.setPreviousClose(previousClose);
         stockData.setChangeAmount(changeAmount);
         stockData.setChangePercent(changePercent);

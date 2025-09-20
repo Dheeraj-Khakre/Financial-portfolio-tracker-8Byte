@@ -1,121 +1,169 @@
 package com.portfolio.service;
 
 import com.portfolio.dto.AssetRequest;
+import com.portfolio.dto.AssetResponse;
 import com.portfolio.dto.PortfolioRequest;
+import com.portfolio.dto.PortfolioResponse;
 import com.portfolio.entity.Asset;
 import com.portfolio.entity.Portfolio;
 import com.portfolio.entity.User;
 import com.portfolio.exception.ResourceNotFoundException;
+import com.portfolio.mapper.AssetMapper;
+import com.portfolio.mapper.PortfolioMapper;
 import com.portfolio.repository.AssetRepository;
 import com.portfolio.repository.PortfolioRepository;
 import com.portfolio.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
+@Slf4j
 public class PortfolioService {
 
-    @Autowired
-    private PortfolioRepository portfolioRepository;
-
-    @Autowired
-    private AssetRepository assetRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private StockDataService stockDataService;
+    private final PortfolioRepository portfolioRepository;
+    private final AssetRepository assetRepository;
+    private final UserRepository userRepository;
+    private final StockDataService stockDataService;
 
     public List<Portfolio> getUserPortfolios(Long userId) {
         return portfolioRepository.findByUserId(userId);
     }
 
+    public PortfolioResponse getPortfolioById1(Long portfolioId, Long userId) {
+     try {
+         Portfolio portfolio = getPortfolioById(portfolioId, userId);
+         log.info("getPortfolioById1 called userid {} , and portfolio {}" ,userId,portfolio);
+         return PortfolioMapper.toResponse(portfolio);
+     }catch (RuntimeException e){
+         log.error(" error got getPortfolioById1 {}",e.toString());
+         throw new ResourceNotFoundException("getPortfolioById1 getting error " + userId +" portfolio id "+portfolioId);
+     }
+    }
+
     public Portfolio getPortfolioById(Long portfolioId, Long userId) {
-        return portfolioRepository.findByIdAndUserId(portfolioId, userId)
+      return   portfolioRepository.findByIdAndUserId(portfolioId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Portfolio not found with id: " + portfolioId));
     }
 
-    public Portfolio createPortfolio(PortfolioRequest request, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+    public PortfolioResponse createPortfolio(PortfolioRequest request, Long userId) {
+       try {
+           User user = userRepository.findById(userId)
+                   .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        Portfolio portfolio = new Portfolio(request.getName(), request.getDescription(), user);
-        return portfolioRepository.save(portfolio);
+           Portfolio portfolio =Portfolio
+                   .builder()
+                   .name(request.getName())
+                   .description(request.getDescription())
+                   .user(user)
+                   .build();
+           log.info("createPortfolio called userid {} , and portfolio {}" ,userId,request);
+           Portfolio save = portfolioRepository.save(portfolio);
+           return    PortfolioMapper.toResponse(save);
+       }catch (RuntimeException e){
+           log.error(" error got createPortfolio {}",e.toString());
+           throw new ResourceNotFoundException("createPortfolio got error while saving  " + userId +" portfolio id "+request);
+       }
     }
 
-    public Portfolio updatePortfolio(Long portfolioId, PortfolioRequest request, Long userId) {
-        Portfolio portfolio = getPortfolioById(portfolioId, userId);
-        portfolio.setName(request.getName());
-        portfolio.setDescription(request.getDescription());
-        return portfolioRepository.save(portfolio);
+    public PortfolioResponse updatePortfolio(Long portfolioId, PortfolioRequest request, Long userId) {
+       try {
+           Portfolio portfolio = getPortfolioById(portfolioId, userId);
+           portfolio.setName(request.getName());
+           portfolio.setDescription(request.getDescription());
+           Portfolio save = portfolioRepository.save(portfolio);
+           return    PortfolioMapper.toResponse(save);
+       }catch (RuntimeException e){
+           log.error(" error got updatePortfolio {}",e.toString());
+           throw new ResourceNotFoundException("updatePortfolio getting  error  " + userId +" portfolio id "+portfolioId);
+       }
+
     }
 
     public void deletePortfolio(Long portfolioId, Long userId) {
         Portfolio portfolio = getPortfolioById(portfolioId, userId);
         portfolioRepository.delete(portfolio);
     }
-
-    public Asset addAssetToPortfolio(Long portfolioId, AssetRequest request, Long userId) {
+    @Transactional
+    public AssetResponse addAssetToPortfolio(Long portfolioId, AssetRequest request, Long userId) {
+        try {
+        // Load and validate portfolio ownership
         Portfolio portfolio = getPortfolioById(portfolioId, userId);
 
-        // Check if asset already exists in portfolio
+        // Ensure ticker not already present
         assetRepository.findByPortfolioIdAndTickerSymbol(portfolioId, request.getTickerSymbol())
-                .ifPresent(existingAsset -> {
-                    throw new IllegalArgumentException("Asset with ticker " + request.getTickerSymbol() +
-                            " already exists in portfolio");
+                .ifPresent(a -> {
+                    throw new IllegalArgumentException(
+                            "Asset with ticker " + request.getTickerSymbol() + " already exists");
                 });
 
-        // Get stock data
+        // External stock data
         var stockData = stockDataService.getStockData(request.getTickerSymbol());
 
-        Asset asset = new Asset(
-                request.getTickerSymbol(),
-                stockData.getCompanyName(),
-                request.getQuantity(),
-                request.getPurchasePrice() != null ? request.getPurchasePrice() : stockData.getCurrentPrice(),
-                portfolio
-        );
+        Asset asset = Asset.builder()
+                .tickerSymbol(request.getTickerSymbol())
+                .companyName(stockData.getCompanyName())
+                .quantity(request.getQuantity())
+                .purchasePrice(request.getPurchasePrice())
+                .currentPrice(
+                        request.getPurchasePrice() != null ? request.getPurchasePrice() : stockData.getCurrentPrice())
+                .assetType(request.getAssetType())
+                .portfolio(portfolio)
+                .build();
 
-        asset.setCurrentPrice(stockData.getCurrentPrice());
-        asset.setAssetType(request.getAssetType());
+        // compute total value for this asset
         asset.setTotalValue(asset.getQuantity().multiply(asset.getCurrentPrice()));
 
-        Asset savedAsset = assetRepository.save(asset);
-        updatePortfolioTotalValue(portfolio);
+        // Persist the new asset
+        Asset saved = assetRepository.save(asset);
 
-        return savedAsset;
+        // Update portfolio total directly from DB to avoid ConcurrentModificationException
+        updatePortfolioTotalValue(portfolioId);
+
+        return AssetMapper.toResponse(saved);
+    }    catch (RuntimeException e){
+            log.error(" error got addAssetToPortfolio {}",e.toString());
+            throw new ResourceNotFoundException("addAssetToPortfolio getting  error  " + userId +" portfolio id "+portfolioId);
+        }
+
     }
 
-    public Asset updateAsset(Long portfolioId, Long assetId, AssetRequest request, Long userId) {
-        Portfolio portfolio = getPortfolioById(portfolioId, userId);
-        Asset asset = assetRepository.findById(assetId)
-                .orElseThrow(() -> new ResourceNotFoundException("Asset not found with id: " + assetId));
+    public AssetResponse updateAsset(Long portfolioId, Long assetId, AssetRequest request, Long userId) {
+       try {
+           Portfolio portfolio = getPortfolioById(portfolioId, userId);
+           Asset asset = assetRepository.findById(assetId)
+                   .orElseThrow(() -> new ResourceNotFoundException("Asset not found with id: " + assetId));
 
-        if (!asset.getPortfolio().getId().equals(portfolioId)) {
-            throw new IllegalArgumentException("Asset does not belong to the specified portfolio");
-        }
+           if (!asset.getPortfolio().getId().equals(portfolioId)) {
+               throw new IllegalArgumentException("Asset does not belong to the specified portfolio");
+           }
 
-        asset.setQuantity(request.getQuantity());
-        if (request.getPurchasePrice() != null) {
-            asset.setPurchasePrice(request.getPurchasePrice());
-        }
-        asset.setAssetType(request.getAssetType());
+           asset.setQuantity(request.getQuantity());
+           if (request.getPurchasePrice() != null) {
+               asset.setPurchasePrice(request.getPurchasePrice());
+           }
+           asset.setAssetType(request.getAssetType());
 
-        // Update current price and total value
-        var stockData = stockDataService.getStockData(asset.getTickerSymbol());
-        asset.setCurrentPrice(stockData.getCurrentPrice());
-        asset.setTotalValue(asset.getQuantity().multiply(asset.getCurrentPrice()));
+           // Update current price and total value
+           var stockData = stockDataService.getStockData(asset.getTickerSymbol());
+           asset.setCurrentPrice(stockData.getCurrentPrice());
+           asset.setTotalValue(asset.getQuantity().multiply(asset.getCurrentPrice()));
 
-        Asset savedAsset = assetRepository.save(asset);
-        updatePortfolioTotalValue(portfolio);
+           Asset savedAsset = assetRepository.save(asset);
+           updatePortfolioTotalValue(portfolioId);
 
-        return savedAsset;
+           return AssetMapper.toResponse(savedAsset);
+       }catch (RuntimeException e){
+           log.error(" error got updateAsset {}",e.toString());
+           throw new ResourceNotFoundException("updateAsset getting  error  " + userId +" portfolio id "+portfolioId);
+       }
     }
 
     public void removeAssetFromPortfolio(Long portfolioId, Long assetId, Long userId) {
@@ -128,33 +176,37 @@ public class PortfolioService {
         }
 
         assetRepository.delete(asset);
-        updatePortfolioTotalValue(portfolio);
+        updatePortfolioTotalValue(portfolioId);
     }
 
     public void updatePortfolioPrices(Long portfolioId, Long userId) {
-        Portfolio portfolio = portfolioRepository.findByIdWithAssets(portfolioId)
-                .orElseThrow(() -> new ResourceNotFoundException("Portfolio not found with id: " + portfolioId));
+       try{
+           Portfolio portfolio = portfolioRepository.findByIdWithAssets(portfolioId)
+                   .orElseThrow(() -> new ResourceNotFoundException("Portfolio not found with id: " + portfolioId));
 
-        if (!portfolio.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("Portfolio does not belong to the specified user");
-        }
+           if (!portfolio.getUser().getId().equals(userId)) {
+               throw new IllegalArgumentException("Portfolio does not belong to the specified user");
+           }
 
-        for (Asset asset : portfolio.getAssets()) {
-            var stockData = stockDataService.getStockData(asset.getTickerSymbol());
-            asset.setCurrentPrice(stockData.getCurrentPrice());
-            asset.setTotalValue(asset.getQuantity().multiply(asset.getCurrentPrice()));
-            assetRepository.save(asset);
-        }
+           for (Asset asset : portfolio.getAssets()) {
+               var stockData = stockDataService.getStockData(asset.getTickerSymbol());
+               asset.setCurrentPrice(stockData.getCurrentPrice());
+               asset.setTotalValue(asset.getQuantity().multiply(asset.getCurrentPrice()));
+               assetRepository.save(asset);
+           }
 
-        updatePortfolioTotalValue(portfolio);
+           updatePortfolioTotalValue(portfolioId);
+       }catch (RuntimeException e){
+           log.error(" error got updatePortfolioPrices {}",e.toString());
+           throw new ResourceNotFoundException("updatePortfolioPrices getting  error  " + userId +" portfolio id "+portfolioId);
+       }
+
     }
-
-    private void updatePortfolioTotalValue(Portfolio portfolio) {
-        BigDecimal totalValue = portfolio.getAssets().stream()
-                .map(Asset::getTotalValue)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        portfolio.setTotalValue(totalValue);
-        portfolioRepository.save(portfolio);
+    @Transactional
+    protected void updatePortfolioTotalValue(Long portfolioId) {
+        BigDecimal total = assetRepository.sumTotalValue(portfolioId);
+        portfolioRepository.findById(portfolioId)
+                .ifPresent(p ->
+                    p.setTotalValue(total));
     }
 }

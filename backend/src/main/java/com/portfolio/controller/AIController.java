@@ -5,7 +5,7 @@ import com.portfolio.entity.Portfolio;
 import com.portfolio.security.UserPrincipal;
 import com.portfolio.service.AIInsightService;
 import com.portfolio.service.PortfolioService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/ai")
 @CrossOrigin(origins = "*", maxAge = 3600)
+@RequiredArgsConstructor
 public class AIController {
 
-    @Autowired
-    private AIInsightService aiInsightService;
 
-    @Autowired
-    private PortfolioService portfolioService;
+    private final AIInsightService aiInsightService;
+
+    private final PortfolioService portfolioService;
 
     @GetMapping("/insights/{portfolioId}")
     public ResponseEntity<AIInsightResponse> getPortfolioInsights(

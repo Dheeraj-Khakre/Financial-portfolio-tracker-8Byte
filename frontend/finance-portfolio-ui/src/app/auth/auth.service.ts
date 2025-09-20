@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { SignupRequest } from '../models/signup-request';
 import { JwtResponse, MessageResponse } from '../models/jwt-response';
 import { LoginRequest } from '../models/login-request';
-import { environment } from '../../environments/environments.prod';
+import { environment } from '../../environments/environments';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
@@ -28,7 +28,7 @@ export class AuthService {
     return this.http.post<JwtResponse>(`${this.api}/signin`, payload).pipe(
       tap(res => {
         if (isPlatformBrowser(this.platformId)) {
-          localStorage.setItem(this.tokenKey, res.accessToken);
+          localStorage.setItem(this.tokenKey, res.token);
         }
         this._loggedIn.next(true);
       })

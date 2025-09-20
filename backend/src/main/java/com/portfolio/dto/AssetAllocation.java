@@ -1,21 +1,21 @@
 package com.portfolio.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LoginRequest {
-    @NotBlank
-    private String username;
+public class AssetAllocation {
 
-    @NotBlank
-    private String password;
-
+    private String category;
+    private BigDecimal percentage;
+    private BigDecimal value;
 
 }
