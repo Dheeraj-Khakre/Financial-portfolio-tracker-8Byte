@@ -4,7 +4,11 @@ import com.portfolio.dto.HistoricalPrice;
 import com.portfolio.dto.StockData;
 import com.portfolio.service.StockDataAlphaService;
 import com.portfolio.service.StockDataService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +19,7 @@ import java.util.List;
 @RequestMapping("/stocks")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequiredArgsConstructor
+@Slf4j
 public class StockController {
 
 
@@ -22,8 +27,17 @@ public class StockController {
     private final StockDataAlphaService stockDataAlphaService;
 
     @GetMapping("/{symbol}")
+    @CircuitBreaker(name = "stockApi", fallbackMethod = "fallbackStock")
+    @Retry(name = "stockApi")
     public ResponseEntity<StockData> getStockData(@PathVariable String symbol) {
+        log.info("response from Alpha Vantage for symbol {}",symbol);
         StockData stockData = stockDataAlphaService.getStockData(symbol);
+        return ResponseEntity.ok(stockData);
+    }
+
+    public ResponseEntity<StockData> fallbackStock( String symbol, Throwable ex) {
+        log.error("got error in getStockData while fetching data {}",ex.getMessage());
+        StockData stockData = stockDataService.getStockData(symbol);
         return ResponseEntity.ok(stockData);
     }
 
