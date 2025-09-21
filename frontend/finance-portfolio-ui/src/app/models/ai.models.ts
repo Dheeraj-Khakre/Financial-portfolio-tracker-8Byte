@@ -1,4 +1,4 @@
-// src/app/ai/models/ai.models.ts
+
 export interface AssetAllocation {
   category: string;
   percentage: number; // 0-100

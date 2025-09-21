@@ -13,7 +13,6 @@ export class AiService {
 
   private api = `${environment.apiUrl}/ai`;
 
-  /** Build HttpClient options with Authorization header if token exists */
   private getAuthOptions(): { headers?: HttpHeaders } {
     const token = this.auth.token;
     if (token) {
@@ -23,10 +22,6 @@ export class AiService {
     return {};
   }
 
-  /**
-   * Fetch AI insights for a portfolio.
-   * Backend: GET /ai/insights/{portfolioId}
-   */
   getPortfolioInsights(portfolioId: number): Observable<AIInsightResponse> {
     console.log(`Fetching AI insights for portfolio ID: ${portfolioId}`);
     return this.http.get<AIInsightResponse>(`${this.api}/insights/${portfolioId}`, this.getAuthOptions());

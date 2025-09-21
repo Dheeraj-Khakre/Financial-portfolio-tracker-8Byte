@@ -15,8 +15,6 @@ export class AiInsightsDialogComponent implements OnInit {
   portfolioName?: string;
   loading = false;
   insights?: AIInsightResponse | null;
-
-  // ngx-charts expects { name, value } pairs
   allocationChartData: Array<{ name: string; value: number }> = [];
 
   constructor(
