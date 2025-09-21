@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit {
   // form will be created in constructor (so FormBuilder is available)
   addForm!: FormGroup;
 
-  displayedColumns = ['ticker', 'quantity', 'currentPrice', 'totalValue', 'actions'];
+  displayedColumns = ['ticker', 'company_name', 'quantity', 'currentPrice', 'totalValue', 'actions'];
 
   constructor(
     private fb: FormBuilder,
