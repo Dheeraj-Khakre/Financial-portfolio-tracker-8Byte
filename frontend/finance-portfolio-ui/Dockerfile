@@ -5,13 +5,14 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-# Install dependencies first (better caching)
+# Install dependencies first (for better caching)
 COPY package*.json ./
 RUN npm ci
 
 # Copy rest of the code and build
 COPY . .
-RUN npm run build --configuration production
+RUN npm run build
+#RUN npm run build --configuration production
 
 # ---------------------------
 # Stage 2: Run with Express
@@ -20,15 +21,15 @@ FROM node:20-alpine AS runtime
 
 WORKDIR /app
 
-# Copy only what is needed for runtime
+# Install only runtime dependencies
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-# Copy dist output and server.js
+# Copy Angular dist and server.js
 COPY --from=build /app/dist ./dist
 COPY server.js ./server.js
 
-# Expose port for the container
+# Expose port for Docker
 EXPOSE 4200
 
 # Start the Express server

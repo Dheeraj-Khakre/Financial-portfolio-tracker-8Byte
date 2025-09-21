@@ -72,11 +72,11 @@ public class AIController {
 
 
     // this controller only for testing...
-//    @GetMapping("/chat")
-//    public ResponseEntity<String> getResponse(@RequestParam("q") String q, @AuthenticationPrincipal UserPrincipal userPrincipal ){
-//       String response=  aiChatService.getResponse(q, userPrincipal.getUsername());
-//       return  ResponseEntity.ok(response);
-//    }
+    @GetMapping("/chat")
+    public ResponseEntity<String> getResponse(@RequestParam("q") String q, @AuthenticationPrincipal UserPrincipal userPrincipal ){
+       String response=  aiChatService.getResponse(q, userPrincipal.getUsername());
+       return  ResponseEntity.ok(response);
+    }
 
 
 
