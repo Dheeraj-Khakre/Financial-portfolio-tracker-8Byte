@@ -1,4 +1,4 @@
-// src/app/portfolio/models/portfolio.models.ts
+
 export interface AssetResponse {
   id: number;
   tickerSymbol: string;

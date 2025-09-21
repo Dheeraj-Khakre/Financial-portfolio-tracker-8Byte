@@ -1,9 +1,6 @@
 package com.portfolio.service;
 
-import com.portfolio.dto.AssetRequest;
-import com.portfolio.dto.AssetResponse;
-import com.portfolio.dto.PortfolioRequest;
-import com.portfolio.dto.PortfolioResponse;
+import com.portfolio.dto.*;
 import com.portfolio.entity.Asset;
 import com.portfolio.entity.Portfolio;
 import com.portfolio.entity.User;
@@ -31,7 +28,8 @@ public class PortfolioService {
     private final PortfolioRepository portfolioRepository;
     private final AssetRepository assetRepository;
     private final UserRepository userRepository;
-    private final StockDataService stockDataService;
+    private final StockDataAlphaService stockDataService;
+    private final AIChatService aiChatService;
 
     public List<Portfolio> getUserPortfolios(Long userId) {
         return portfolioRepository.findByUserId(userId);
@@ -104,11 +102,12 @@ public class PortfolioService {
                             "Asset with ticker " + request.getTickerSymbol() + " already exists");
                 });
 
-        // External stock data
-        var stockData = stockDataService.getStockData(request.getTickerSymbol());
+            SymbolSuggest closestStockSymbol = aiChatService.findClosestStockSymbol(request.getTickerSymbol());
+            // External stock data
+        var stockData = stockDataService.getStockData(closestStockSymbol.getSymbol());
 
         Asset asset = Asset.builder()
-                .tickerSymbol(request.getTickerSymbol())
+                .tickerSymbol(closestStockSymbol.getSymbol())
                 .companyName(stockData.getCompanyName())
                 .quantity(request.getQuantity())
                 .purchasePrice(request.getPurchasePrice())
@@ -150,9 +149,10 @@ public class PortfolioService {
                asset.setPurchasePrice(request.getPurchasePrice());
            }
            asset.setAssetType(request.getAssetType());
+           SymbolSuggest closestStockSymbol = aiChatService.findClosestStockSymbol(request.getTickerSymbol());
+           // External stock data
+           var stockData = stockDataService.getStockData(closestStockSymbol.getSymbol());
 
-           // Update current price and total value
-           var stockData = stockDataService.getStockData(asset.getTickerSymbol());
            asset.setCurrentPrice(stockData.getCurrentPrice());
            asset.setTotalValue(asset.getQuantity().multiply(asset.getCurrentPrice()));
 

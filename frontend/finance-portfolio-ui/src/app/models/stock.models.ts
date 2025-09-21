@@ -1,4 +1,4 @@
-// src/app/stocks/models/stock.models.ts
+
 export interface HistoricalPrice {
   date: string;      // ISO date from backend
   price: number;
