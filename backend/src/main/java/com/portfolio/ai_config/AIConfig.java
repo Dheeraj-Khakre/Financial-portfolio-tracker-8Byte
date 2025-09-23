@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AIConfig {
 
-     @Bean
+    @Bean
     public ChatMemory getChatMemory(JdbcChatMemoryRepository repository){
         return MessageWindowChatMemory.builder()
                 .chatMemoryRepository(repository)
