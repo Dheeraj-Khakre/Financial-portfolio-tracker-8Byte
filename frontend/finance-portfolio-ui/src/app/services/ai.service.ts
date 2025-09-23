@@ -1,6 +1,6 @@
 // src/app/ai/ai.service.ts
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { AIInsightResponse } from '../models/ai.models';
@@ -26,4 +26,16 @@ export class AiService {
     console.log(`Fetching AI insights for portfolio ID: ${portfolioId}`);
     return this.http.get<AIInsightResponse>(`${this.api}/insights/${portfolioId}`, this.getAuthOptions());
   }
+
+getAiChatResponse(query: string): Observable<string> {
+  console.log(`Sending message to AI chat: ${query}`);
+
+  const params = new HttpParams().set('q', query);
+
+  return this.http.get<string>(`${this.api}/chat`, {
+    params,
+    headers: this.getAuthOptions().headers, // assuming getAuthOptions returns { headers }
+    responseType: 'text' as 'json'          // tell Angular we expect plain text
+  });
+}
 }

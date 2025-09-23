@@ -1,0 +1,22 @@
+<div class="chat-container">
+  <div class="chat-window">
+    <div *ngFor="let msg of messages" [class.user]="msg.sender === 'user'" [class.ai]="msg.sender === 'ai'">
+      <div class="bubble">
+        <div *ngIf="msg.sender === 'ai'; else plain" [innerHTML]="msg.html || msg.text"></div>
+        <ng-template #plain>{{ msg.text }}</ng-template>
+      </div>
+    </div>
+    <div *ngIf="loading" class="loading">Thinking…</div>
+  </div>
+
+  <form class="chat-input" (ngSubmit)="sendMessage()">
+    <input
+      type="text"
+      [(ngModel)]="input"
+      name="chat"
+      placeholder="Type your message…"
+      class="form-control flex-grow-1 me-2"
+    />
+    <button type="submit" class="btn btn-primary" [disabled]="loading || !input.trim()">Send</button>
+  </form>
+</div>

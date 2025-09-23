@@ -59,7 +59,7 @@ public class AIChatService {
                 .prompt(q)
              // .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID,userName))
               .system("you are expert in stock analyse and stock markest ")
-                .user("give me insight about this portfolio ")
+                .user("You are a financial data assistant")
                 .call()
               .content();
     }

@@ -30,6 +30,10 @@
       <mat-icon>insights</mat-icon> Insights
     </button>
 
+    <button mat-fab color="primary" class="ai-chat-fab" (click)="openAiChat()" aria-label="Open AI Chat">
+      <mat-icon>chat</mat-icon>
+    </button>
+
 
     <div *ngIf="loading" class="ms-2">
       <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
@@ -93,7 +97,7 @@
             </ng-container>
 
 
-              <!-- quantity -->
+            <!-- quantity -->
             <ng-container matColumnDef="quantity">
               <th mat-header-cell *matHeaderCellDef>Qty</th>
               <td mat-cell *matCellDef="let a">{{ a.quantity }}</td>

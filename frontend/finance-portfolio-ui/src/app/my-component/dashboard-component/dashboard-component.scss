@@ -1,3 +1,15 @@
 /* src/app/dashboard/dashboard.component.scss */
 .cursor-pointer { cursor: pointer; }
 mat-card { margin-bottom: 1rem; }
+
+.ai-chat-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+}
+.ai-chat-dialog .mat-dialog-container {
+  padding: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
