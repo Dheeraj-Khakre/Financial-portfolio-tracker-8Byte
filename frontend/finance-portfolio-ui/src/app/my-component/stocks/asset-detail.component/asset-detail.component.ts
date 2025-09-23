@@ -17,7 +17,6 @@ export class AssetDetailComponent implements OnInit {
 
   stock?: StockData | null;
   history: HistoricalPrice[] = [];
-  // ngx-charts expects [{ name: string, series: [{ name: string, value: number }] }]
   lineSeries: Array<{ name: string; series: Array<{ name: string; value: number }> }> = [];
 
   days = 30; // default

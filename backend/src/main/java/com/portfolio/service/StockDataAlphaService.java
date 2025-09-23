@@ -31,7 +31,7 @@ public class StockDataAlphaService {
 
     public StockData getStockData(String symbol) {
         // ---- call the real API ----
-        String url = baseUrl + "?function=GLOBAL_QUOTE&symbol=" + symbol + "&apikey=" + apiKey;
+        String url = baseUrl + "?function=GLOBAL_QUOTE&symbol=" + symbol.toUpperCase() + "&apikey=" + apiKey;
 
         Map<String, Object> response = webClient.get()
                 .uri(url)

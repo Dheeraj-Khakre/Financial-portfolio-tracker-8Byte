@@ -13,7 +13,6 @@ export class PortfolioService {
   private auth = inject(AuthService);
   private api = `${environment.apiUrl}/portfolios`;
 
-  /** Build headers with JWT if available */
   private headers(): HttpHeaders {
     const token = this.auth.token;
     return new HttpHeaders(
@@ -21,7 +20,6 @@ export class PortfolioService {
     );
   }
 
-  /** ---- Portfolios ---- */
   getUserPortfolios(): Observable<PortfolioResponse[]> {
     return this.http.get<PortfolioResponse[]>(this.api, {
       headers: this.headers(),
@@ -63,7 +61,6 @@ export class PortfolioService {
     );
   }
 
-  /** ---- Assets ---- */
   addAsset(portfolioId: number, payload: AssetRequest): Observable<AssetResponse> {
     return this.http.post<AssetResponse>(
       `${this.api}/${portfolioId}/assets`,

@@ -14,11 +14,8 @@ export class AuthService {
   private tokenKey = 'jwt-token';
   private api = `${environment.apiUrl}/auth`;
 
-  /** 🔑 logged-in state is only true if we're in the browser and a token exists */
   private _loggedIn = new BehaviorSubject<boolean>(this.hasStoredToken());
   loggedIn$ = this._loggedIn.asObservable();
-
-  /** ---------- API calls ---------- */
 
   register(payload: SignupRequest): Observable<MessageResponse> {
     return this.http.post<MessageResponse>(`${this.api}/signup`, payload);
@@ -41,19 +38,14 @@ export class AuthService {
     }
     this._loggedIn.next(false);
   }
-
-  /** ---------- Helpers ---------- */
   get token(): string | null {
     return isPlatformBrowser(this.platformId)
       ? localStorage.getItem(this.tokenKey)
       : null;
   }
-
   get isLoggedIn(): boolean {
     return this._loggedIn.value;
   }
-
-  /** check safely for SSR */
   private hasStoredToken(): boolean {
     return isPlatformBrowser(this.platformId) && !!localStorage.getItem(this.tokenKey);
   }

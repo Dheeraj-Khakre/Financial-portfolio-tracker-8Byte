@@ -5,6 +5,7 @@ import { Register } from './my-component/register/register';
 import { DashboardComponent } from './my-component/dashboard-component/dashboard-component';
 import { AssetDetailComponent } from './my-component/stocks/asset-detail.component/asset-detail.component';
 import { PortfolioFormComponent } from './my-component/portfolio/portfolio-form.component/portfolio-form.component';
+import { AiChatComponent } from './my-component/ai/ai-chat-component/ai-chat-component';
 const routes: Routes = [
   { path: 'login', component: Login  },
   { path: 'register', component: Register },
@@ -12,6 +13,7 @@ const routes: Routes = [
   { path: 'asset/:symbol', component: AssetDetailComponent },
   { path: 'portfolios/create', component: PortfolioFormComponent },
   { path: 'portfolios/:id/edit', component: PortfolioFormComponent },
+  { path: 'ai-chat', component: AiChatComponent},
   { path: '', redirectTo: '/login', pathMatch: 'full' }
 ];
 @NgModule({

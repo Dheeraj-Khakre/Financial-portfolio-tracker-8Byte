@@ -1,9 +1,7 @@
 version: "3.8"
 
 services:
-  # -------------------------
   # MySQL Database
-  # -------------------------
   mysql:
     image: mysql:8.0
     container_name: portfolio-mysql
@@ -17,11 +15,11 @@ services:
     networks:
       - portfolio-network
 
-  # -------------------------
   # Spring Boot Backend
-  # -------------------------
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: portfolio-backend
     depends_on:
       - mysql
@@ -29,27 +27,29 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/portfolio_tracker?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root123
+      EVN: dev
     ports:
       - "8080:8080"
     networks:
       - portfolio-network
+    restart: unless-stopped
 
-  # -------------------------
   # Angular Frontend (Node/Express)
-  # -------------------------
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend/finance-portfolio-ui
+      dockerfile: Dockerfile
     container_name: portfolio-frontend
     depends_on:
       - backend
     environment:
-      # Let the Angular app know where the backend is
       API_URL: http://backend:8080
       NODE_ENV: production
     ports:
-      - "4200:8080"    # Host:Container (serve frontend on host:4200)
+      - "4200:4200"
     networks:
       - portfolio-network
+    restart: unless-stopped
 
 volumes:
   mysql_data:

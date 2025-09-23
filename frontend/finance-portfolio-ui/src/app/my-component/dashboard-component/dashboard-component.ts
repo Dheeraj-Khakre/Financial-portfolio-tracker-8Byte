@@ -8,6 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { AssetDetailDialogComponent } from '../stocks/asset-detail-dialog.component/asset-detail-dialog.component';
 import { PortfolioFormDialogComponent } from '../portfolio/portfolio-form-dialog.component/portfolio-form-dialog.component';
 import { AiInsightsDialogComponent } from '../ai/ai-insights-dialog.component/ai-insights-dialog.component';
+import { AiChatComponent } from '../ai/ai-chat-component/ai-chat-component';
 
 @Component({
   selector: 'app-dashboard-component',
@@ -27,11 +28,9 @@ export class DashboardComponent implements OnInit {
   allocationData: Array<{ name: string; value: number }> = [];
   lineSeries: Array<{ name: string; series: Array<{ name: string; value: number }> }> = [];
   selectedAsset?: AssetResponse | null;
-
-  // form will be created in constructor (so FormBuilder is available)
   addForm!: FormGroup;
 
-  displayedColumns = ['ticker', 'quantity', 'currentPrice', 'totalValue', 'actions'];
+  displayedColumns = ['ticker', 'company_name', 'quantity', 'currentPrice', 'totalValue', 'actions'];
 
   constructor(
     private fb: FormBuilder,
@@ -184,28 +183,20 @@ export class DashboardComponent implements OnInit {
     });
 
     ref.afterClosed().subscribe(result => {
-      // result may be { id } for created/updated, or { deleted: true }, or undefined
       if (result?.id) {
-        // refresh portfolios and select the new/updated one
         this.loadPortfolios(); // we reload; after loadPortfolios will select first by default
-        // Optionally select the returned portfolio after load completes:
-        // For that we can wait a tick or modify loadPortfolios to accept a selectId param.
-        // Simpler: after reload, call selectPortfolio with ID (implement select after promise)
         setTimeout(() => {
           const found = this.portfolios.find(p => p.id === result.id);
           if (found) this.selectPortfolio(found.id);
         }, 400);
       } else if (result?.deleted) {
-        // reload list and clear selection
         this.loadPortfolios();
       } else {
-        // nothing changed — still reload to be safe
         this.loadPortfolios();
       }
     });
   }
 
-  // add method
   openAiInsights() {
     if (!this.selectedPortfolio) return;
 
@@ -218,10 +209,18 @@ export class DashboardComponent implements OnInit {
       maxHeight: '80vh'
     });
 
-    // optionally handle afterClosed
     ref.afterClosed().subscribe(() => {
-      // no special result expected; keep as no-op or refresh portfolios if needed
     });
   }
+
+ openAiChat() {
+  if (!this.selectedPortfolio) return;
+
+  this.dialog.open(AiChatComponent, {
+    width: '70%',          // ✅ 70% of screen width
+    maxHeight: '80vh',     // optional: max height 80% of viewport
+    panelClass: 'ai-chat-dialog'
+  });
+}
 
 }
