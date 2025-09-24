@@ -102,7 +102,7 @@ public class PortfolioService {
                             "Asset with ticker " + request.getTickerSymbol() + " already exists");
                 });
 
-            SymbolSuggest closestStockSymbol = aiChatService.findClosestStockSymbol(request.getTickerSymbol());
+            SymbolSuggest closestStockSymbol = aiChatService.findClosestStockSymbol(request.getTickerSymbol(),userId);
             // External stock data
         var stockData = stockDataService.getStockData(closestStockSymbol.getSymbol());
 
@@ -149,7 +149,7 @@ public class PortfolioService {
                asset.setPurchasePrice(request.getPurchasePrice());
            }
            asset.setAssetType(request.getAssetType());
-           SymbolSuggest closestStockSymbol = aiChatService.findClosestStockSymbol(request.getTickerSymbol());
+           SymbolSuggest closestStockSymbol = aiChatService.findClosestStockSymbol(request.getTickerSymbol(),userId);
            // External stock data
            var stockData = stockDataService.getStockData(closestStockSymbol.getSymbol());
 

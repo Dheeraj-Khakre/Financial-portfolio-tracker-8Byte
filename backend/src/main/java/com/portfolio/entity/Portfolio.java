@@ -18,7 +18,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Entity
-@ToString
 @Table(name = "portfolios")
 public class Portfolio {
     @Id

@@ -36,7 +36,7 @@ public class AIController {
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
 
         Portfolio portfolio = portfolioService.getPortfolioById(portfolioId, userPrincipal.getId());
-        AIInsightResponse insights = aiChatService.getAiInsightResponse(portfolio, userPrincipal.getUsername());
+        AIInsightResponse insights = aiChatService.getAiInsightResponse(portfolio, userPrincipal.getId());
 
         return ResponseEntity.ok(insights);
     }
@@ -59,14 +59,14 @@ public class AIController {
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
 
         Portfolio portfolio = portfolioService.getPortfolioById(portfolioId, userPrincipal.getId());
-        AIInsightResponse insights = aiChatService.getAiInsightResponse(portfolio, userPrincipal.getUsername());
+        AIInsightResponse insights = aiChatService.getAiInsightResponse(portfolio, userPrincipal.getId());
 
         return ResponseEntity.ok(insights);
     }
 
     @GetMapping("/symbol-suggest")
-    public ResponseEntity<SymbolSuggest> suggestSymbol(@RequestParam String q) {
-        SymbolSuggest suggestion = aiChatService.findClosestStockSymbol(q);
+    public ResponseEntity<SymbolSuggest> suggestSymbol(@RequestParam String q, @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        SymbolSuggest suggestion = aiChatService.findClosestStockSymbol(q,userPrincipal.getId());
         return ResponseEntity.ok(suggestion);
     }
 
@@ -74,7 +74,7 @@ public class AIController {
     // this controller only for testing...
     @GetMapping("/chat")
     public ResponseEntity<String> getResponse(@RequestParam("q") String q, @AuthenticationPrincipal UserPrincipal userPrincipal ){
-       String response=  aiChatService.getResponse(q, userPrincipal.getUsername());
+       String response=  aiChatService.getResponse(q, userPrincipal.getId());
        return  ResponseEntity.ok(response);
     }
 
